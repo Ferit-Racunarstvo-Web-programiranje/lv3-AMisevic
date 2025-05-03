@@ -22,7 +22,17 @@ function prikaziTablicu(filmovi) {
     tbody.innerHTML = ''; // ocisti ako postoji
     for (const film of filmovi) {
         const row = document.createElement('tr');
-        row.innerHTML = '<td>${film.title}</td><td>${film.year}</td><td>${film.genre}</td> <td>${film.duration}</td> <td>${film.country.join(', ')}</td> <td>${film.total_votes}</td>';
+        row.innerHTML = `
+        <td>${film.title}</td>
+        <td>${film.year}</td>
+        <td>${film.genre}</td>
+        <td>${film.duration}</td>
+        <td>${film.country.join(', ')}</td>
+        <td>${film.total_votes}</td>
+        `;
         tbody.appendChild(row);
         }
     }
+
+
+    
