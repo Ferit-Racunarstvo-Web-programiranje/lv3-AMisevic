@@ -1,4 +1,5 @@
 let sviFilmovi = [];
+let kosarica = [];
 
 fetch('filmtv_movies.csv')
     .then(res => res.text())
@@ -24,7 +25,19 @@ fetch('filmtv_movies.csv')
                 ratingDisplay.textContent = rangeInput.value;
             });
             document.getElementById('primijeni-filtere').addEventListener('click', filtriraj);
+
             //prikaziFiltriraneFilmove(sviFilmovi.slice(0, 10));
+            //document.getElementById('dodaj').addEventListener('click', dodajUKosaricu());
+
+            document.getElementById('potvrdi-kosaricu').addEventListener('click',() =>{
+                if (kosarica.length===0){
+                    alert("Kosarica je prazna!");
+                } else {
+                    alert(`Uspjesno ste odabrali ${kosarica.length} filmova za gledanje!`);
+                    kosarica=[];
+                    osvjeziKosaricu();
+                }
+            });
         })
         .catch(err => {
             console.error('Greska pri dohvacanju CSV-a:', err);
@@ -46,8 +59,12 @@ function prikaziPocetneFilmove(filmovi) {
         <td>${film.duration} min</td>
         <td>${film.country.join(', ')}</td>
         <td>${film.total_votes}</td>
+        <td><button class="dodaj">Dodaj</button></td>
         `;
         tbody.appendChild(row);
+        // moj dodatak kako bi na button koji sam gore dodao povezao listener koji ce onda odma imati poveznicu na objek filma o kojem se radi 
+        const btn = row.querySelector('.dodaj');
+        btn.addEventListener('click', () => dodajUKosaricu(film));
     }
 }    
 
@@ -59,7 +76,7 @@ function prikaziFiltriraneFilmove(filmovi) {
         return;
     }
     for (const film of filmovi){
-        const row=document.createElement('tr');
+        const row = document.createElement('tr');
         row.innerHTML=`
         <td>${film.title}</td>
         <td>${film.year}</td>
@@ -67,8 +84,11 @@ function prikaziFiltriraneFilmove(filmovi) {
         <td>${film.duration}min</td>
         <td>${film.country.join(', ')}</td>
         <td>${film.avg_vote}</td>
+        <td><button class="dodaj">Dodaj</td>
         `;
         tbody.appendChild(row);
+        const btn = row.querySelector('.dodaj');
+        btn.addEventListener('click', () => dodajUKosaricu(film));
     }
 }
 
@@ -88,26 +108,34 @@ function filtriraj() {
     prikaziFiltriraneFilmove(filtriraniFilmovi);
 }
 
-
-
-/* Ova funckija zapravo je jednaka kao i prikaziPocetneFilmove, samo je ime drugacije
-function prikaziTablicu(filmovi) {
-    const tbody = document.querySelector('#filmovi-tablica tbody');
-    tbody.innerHTML = ''; // ocisti ako postoji
-    for (const film of filmovi) {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-        <td>${film.title}</td>
-        <td>${film.year}</td>
-        <td>${film.genre}</td>
-        <td>${film.duration}</td>
-        <td>${film.country.join(', ')}</td>
-        <td>${film.total_votes}</td>
-        `;
-        tbody.appendChild(row);
-        }
+function dodajUKosaricu(film) {
+    if (!kosarica.includes(film)){
+        kosarica.push(film);
+        osvjeziKosaricu();
+    } else {
+        alert("Film je vec u kosarici!");
     }
-*/
+}
 
+function osvjeziKosaricu() {
+    const lista=document.getElementById('lista-kosarice');
+    lista.innerHTML='';
+    kosarica.forEach((film,index)=>{
+        const li=document.createElement('li');
+        li.textContent= film.title;
+        const ukloniBtn=document.createElement('button');
+        ukloniBtn.textContent='Ukloni';
+        ukloniBtn.addEventListener('click',()=>{
+            ukloniIzKosarice(index);
+        });
+        li.appendChild(ukloniBtn);
+        lista.appendChild(li);
+    });
+}
+
+function ukloniIzKosarice(index) {
+    kosarica.splice(index,1);
+    osvjeziKosaricu();
+}
 
     
